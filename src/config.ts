@@ -7,6 +7,7 @@ export enum FuseVersion {
  */
 export enum FuseV1Options {
   RunAsNode = 0,
+  EnableCookieEncryption = 1,
 }
 
 export type FuseV1Config = {

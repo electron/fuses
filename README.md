@@ -14,6 +14,7 @@ await flipFuses(
   {
     version: FuseVersion.V1,
     [FuseV1Options.RunAsNode]: false, // Disables ELECTRON_RUN_AS_NODE
+    [FuseV1Options.EnableCookieEncryption]: true, // Enables cookie encryption
   },
 );
 ```

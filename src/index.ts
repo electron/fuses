@@ -21,7 +21,10 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
     );
   }
 
-  return [state(config[FuseV1Options.RunAsNode])];
+  return [
+    state(config[FuseV1Options.RunAsNode]),
+    state(config[FuseV1Options.EnableCookieEncryption]),
+  ];
 };
 
 const pathToFuseFile = (pathToElectron: string) => {
@@ -64,7 +67,7 @@ const setFuseWire = async (
   }
   const fuseWireLength = electron[fuseWirePosition + 1];
 
-  const wire = fuseWireBuilder(fuseWireLength);
+  const wire = fuseWireBuilder(fuseWireLength).slice(0, fuseWireLength);
   for (let i = 0; i < wire.length; i++) {
     const idx = fuseWirePosition + 2 + i;
     const currentState = electron[idx];

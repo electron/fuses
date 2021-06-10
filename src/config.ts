@@ -10,8 +10,8 @@ export enum FuseV1Options {
   EnableCookieEncryption = 1,
 }
 
-export type FuseV1Config = {
+export type FuseV1Config<T = boolean> = {
   version: FuseVersion.V1;
-} & Partial<Record<FuseV1Options, boolean>>;
+} & Partial<Record<FuseV1Options, T>>;
 
-export type FuseConfig = FuseV1Config;
+export type FuseConfig<T = boolean> = FuseV1Config<T>;

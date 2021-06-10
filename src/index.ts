@@ -28,6 +28,15 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
 };
 
 const pathToFuseFile = (pathToElectron: string) => {
+  if (pathToElectron.endsWith('.app')) {
+    return path.resolve(
+      pathToElectron,
+      'Contents',
+      'Frameworks',
+      'Electron Framework.framework',
+      'Electron Framework',
+    );
+  }
   if (pathToElectron.includes('.app')) {
     return path.resolve(
       pathToElectron,
@@ -85,6 +94,35 @@ const setFuseWire = async (
   }
 
   await fs.writeFile(fuseFilePath, electron);
+};
+
+export const getCurrentFuseWire = async (pathToElectron: string) => {
+  const fuseFilePath = pathToFuseFile(pathToElectron);
+  const electron = await fs.readFile(fuseFilePath);
+  const fuseWirePosition = electron.indexOf(SENTINEL) + SENTINEL.length;
+
+  if (fuseWirePosition - SENTINEL.length === -1) {
+    throw new Error(
+      'Could not find sentinel in the provided ELectron binary, fuses are only supported in Electron 12 and higher',
+    );
+  }
+  const fuseWireVersion = (electron[fuseWirePosition] as any) as FuseVersion;
+  const fuseWireLength = electron[fuseWirePosition + 1];
+  const fuseConfig: FuseConfig<FuseState> = {
+    version: `${fuseWireVersion}` as FuseVersion,
+  };
+
+  for (let i = 0; i < fuseWireLength; i++) {
+    const idx = fuseWirePosition + 2 + i;
+    const currentState = electron[idx];
+    switch (fuseConfig.version) {
+      case FuseVersion.V1:
+        fuseConfig[i as FuseV1Options] = currentState as FuseState;
+        break;
+    }
+  }
+
+  return fuseConfig;
 };
 
 export const flipFuses = (pathToElectron: string, fuseConfig: FuseConfig) => {

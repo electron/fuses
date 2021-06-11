@@ -12,6 +12,7 @@ export enum FuseV1Options {
 
 export type FuseV1Config<T = boolean> = {
   version: FuseVersion.V1;
+  resetAdHocDarwinSignature?: boolean;
 } & Partial<Record<FuseV1Options, T>>;
 
 export type FuseConfig<T = boolean> = FuseV1Config<T>;

@@ -1,3 +1,4 @@
+import * as cp from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { FuseConfig, FuseV1Config, FuseV1Options, FuseVersion } from './config';
@@ -125,16 +126,34 @@ export const getCurrentFuseWire = async (pathToElectron: string) => {
   return fuseConfig;
 };
 
-export const flipFuses = (pathToElectron: string, fuseConfig: FuseConfig) => {
+export const flipFuses = async (pathToElectron: string, fuseConfig: FuseConfig) => {
   switch (fuseConfig.version) {
     case FuseVersion.V1:
-      return setFuseWire(
+      await setFuseWire(
         pathToElectron,
         fuseConfig.version,
         buildFuseV1Wire.bind(null, fuseConfig),
         (i) => FuseV1Options[i],
       );
+      break;
     default:
       throw new Error(`Unsupported fuse version number: ${fuseConfig.version}`);
+  }
+
+  // Reset the ad-hoc signature on macOS, should only be done for arm64 apps
+  if (fuseConfig.resetAdHocDarwinSignature && pathToElectron.includes('.app')) {
+    const pathToApp = `${pathToElectron.split('.app')[0]}.app`;
+    const result = cp.spawnSync('codesign', [
+      '--sign',
+      '-',
+      '--force',
+      '--preserve-metadata=entitlements,requirements,flags,runtime',
+      '--deep',
+      pathToApp,
+    ]);
+    if (result.status !== 0) {
+      console.error(result.stderr.toString());
+      throw new Error(`Ad-hoc codesign failed with status: ${result.status}`);
+    }
   }
 };

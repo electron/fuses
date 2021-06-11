@@ -60,7 +60,7 @@ console.log('Analyzing app:', chalk.cyan(path.basename(argv.electron)));
 
 getCurrentFuseWire(argv.electron)
   .then((config) => {
-    const { version, ...rest } = config;
+    const { version, resetAdHocDarwinSignature, ...rest } = config;
     console.log(`Fuse Version: ${chalk.cyan(`v${version}`)}`);
 
     switch (config.version) {

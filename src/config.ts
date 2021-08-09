@@ -8,6 +8,8 @@ export enum FuseVersion {
 export enum FuseV1Options {
   RunAsNode = 0,
   EnableCookieEncryption = 1,
+  EnableNodeOptionsEnvironmentVariable = 2,
+  EnableNodeCliInspectArguments = 3,
 }
 
 export type FuseV1Config<T = boolean> = {

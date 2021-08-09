@@ -25,6 +25,8 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
   return [
     state(config[FuseV1Options.RunAsNode]),
     state(config[FuseV1Options.EnableCookieEncryption]),
+    state(config[FuseV1Options.EnableNodeOptionsEnvironmentVariable]),
+    state(config[FuseV1Options.EnableNodeCliInspectArguments]),
   ];
 };
 

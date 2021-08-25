@@ -15,6 +15,8 @@ await flipFuses(
     version: FuseVersion.V1,
     [FuseV1Options.RunAsNode]: false, // Disables ELECTRON_RUN_AS_NODE
     [FuseV1Options.EnableCookieEncryption]: true, // Enables cookie encryption
+    [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false, // Disables the NODE_OPTIONS environment variable
+    [FuseV1Options.EnableNodeCliInspectArguments]: false, // Disables the --inspect and --inspect-brk family of ClI options
   },
 );
 ```

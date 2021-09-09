@@ -17,6 +17,8 @@ await flipFuses(
     [FuseV1Options.EnableCookieEncryption]: true, // Enables cookie encryption
     [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false, // Disables the NODE_OPTIONS environment variable
     [FuseV1Options.EnableNodeCliInspectArguments]: false, // Disables the --inspect and --inspect-brk family of ClI options
+    [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true, // Enables validation of the app.asar archive on macOS
+    [FuseV1Options.OnlyLoadAppFromAsar]: true, // Enforces that Electron will only load your app from "app.asar" instead of it's normall search paths
   },
 );
 ```

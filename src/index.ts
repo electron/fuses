@@ -27,6 +27,8 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
     state(config[FuseV1Options.EnableCookieEncryption]),
     state(config[FuseV1Options.EnableNodeOptionsEnvironmentVariable]),
     state(config[FuseV1Options.EnableNodeCliInspectArguments]),
+    state(config[FuseV1Options.EnableEmbeddedAsarIntegrityValidation]),
+    state(config[FuseV1Options.OnlyLoadAppFromAsar]),
   ];
 };
 

@@ -10,6 +10,8 @@ export enum FuseV1Options {
   EnableCookieEncryption = 1,
   EnableNodeOptionsEnvironmentVariable = 2,
   EnableNodeCliInspectArguments = 3,
+  EnableEmbeddedAsarIntegrityValidation = 4,
+  OnlyLoadAppFromAsar = 5,
 }
 
 export type FuseV1Config<T = boolean> = {

@@ -36,5 +36,16 @@
   "files": [
     "dist",
     "README.md"
-  ]
+  ],
+  "description": "Flip [Electron Fuses](https://github.com/electron/electron/blob/master/docs/tutorial/fuses.md) and customize your packaged build of Electron",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electron/fuses.git"
+  },
+  "keywords": [ "electron", "fuses"],
+  "author": "Electron Community",
+  "bugs": {
+    "url": "https://github.com/electron/fuses/issues"
+  },
+  "homepage": "https://github.com/electron/fuses#readme"
 }

@@ -9,6 +9,7 @@
 ```typescript
 import { flipFuses, FuseVersion, FuseV1Options } from '@electron/fuses';
 
+// During your build / package process
 await flipFuses(
   require('electron'), // Returns the path to the electron binary
   {

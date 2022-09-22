@@ -63,45 +63,60 @@ const setFuseWire = async (
 ) => {
   const fuseFilePath = pathToFuseFile(pathToElectron);
   const electron = await fs.readFile(fuseFilePath);
-  const fuseWirePosition = electron.indexOf(SENTINEL) + SENTINEL.length;
 
-  if (fuseWirePosition - SENTINEL.length === -1) {
-    throw new Error(
-      'Could not find sentinel in the provided ELectron binary, fuses are only supported in Electron 12 and higher',
-    );
-  }
-  const fuseWireVersion = electron[fuseWirePosition];
-  if (parseInt(fuseVersion, 10) !== fuseWireVersion) {
-    throw new Error(
-      `Provided fuse wire version "${parseInt(
-        fuseVersion,
-        10,
-      )}" does not match watch was found in the binary "${fuseWireVersion}".  You should update your usage of @electron/fuses.`,
-    );
-  }
-  const fuseWireLength = electron[fuseWirePosition + 1];
+  const firstSentinel = electron.indexOf(SENTINEL);
+  const lastSentinel = electron.lastIndexOf(SENTINEL);
+  // If the last sentinel is different to the first sentinel we are probably in a universal build
+  // We should flip the fuses in both sentinels to affect both slices of the universal binary
+  const sentinels =
+    firstSentinel === lastSentinel ? [firstSentinel] : [firstSentinel, lastSentinel];
 
-  const wire = fuseWireBuilder(fuseWireLength).slice(0, fuseWireLength);
-  for (let i = 0; i < wire.length; i++) {
-    const idx = fuseWirePosition + 2 + i;
-    const currentState = electron[idx];
-    const newState = wire[i];
-
-    if (currentState === FuseState.REMOVED && newState !== FuseState.INHERIT) {
-      console.warn(
-        `Overriding fuse "${fuseNamer(
-          i,
-        )}" that has been marked as removed, setting this fuse is a noop`,
+  for (const indexOfSentinel of sentinels) {
+    if (indexOfSentinel === -1) {
+      throw new Error(
+        'Could not find sentinel in the provided ELectron binary, fuses are only supported in Electron 12 and higher',
       );
     }
-    if (newState === FuseState.INHERIT) continue;
-    electron[idx] = newState;
+
+    const fuseWirePosition = indexOfSentinel + SENTINEL.length;
+
+    const fuseWireVersion = electron[fuseWirePosition];
+    if (parseInt(fuseVersion, 10) !== fuseWireVersion) {
+      throw new Error(
+        `Provided fuse wire version "${parseInt(
+          fuseVersion,
+          10,
+        )}" does not match watch was found in the binary "${fuseWireVersion}".  You should update your usage of @electron/fuses.`,
+      );
+    }
+    const fuseWireLength = electron[fuseWirePosition + 1];
+
+    const wire = fuseWireBuilder(fuseWireLength).slice(0, fuseWireLength);
+    for (let i = 0; i < wire.length; i++) {
+      const idx = fuseWirePosition + 2 + i;
+      const currentState = electron[idx];
+      const newState = wire[i];
+
+      if (currentState === FuseState.REMOVED && newState !== FuseState.INHERIT) {
+        console.warn(
+          `Overriding fuse "${fuseNamer(
+            i,
+          )}" that has been marked as removed, setting this fuse is a noop`,
+        );
+      }
+      if (newState === FuseState.INHERIT) continue;
+      electron[idx] = newState;
+    }
   }
 
   await fs.writeFile(fuseFilePath, electron);
+
+  return sentinels.length;
 };
 
-export const getCurrentFuseWire = async (pathToElectron: string) => {
+export const getCurrentFuseWire = async (
+  pathToElectron: string,
+): Promise<FuseConfig<FuseState>> => {
   const fuseFilePath = pathToFuseFile(pathToElectron);
   const electron = await fs.readFile(fuseFilePath);
   const fuseWirePosition = electron.indexOf(SENTINEL) + SENTINEL.length;
@@ -130,16 +145,18 @@ export const getCurrentFuseWire = async (pathToElectron: string) => {
   return fuseConfig;
 };
 
-export const flipFuses = async (pathToElectron: string, fuseConfig: FuseConfig) => {
+export const flipFuses = async (
+  pathToElectron: string,
+  fuseConfig: FuseConfig,
+): Promise<number> => {
   switch (fuseConfig.version) {
     case FuseVersion.V1:
-      await setFuseWire(
+      return await setFuseWire(
         pathToElectron,
         fuseConfig.version,
         buildFuseV1Wire.bind(null, fuseConfig),
         (i) => FuseV1Options[i],
       );
-      break;
     default:
       throw new Error(`Unsupported fuse version number: ${fuseConfig.version}`);
   }

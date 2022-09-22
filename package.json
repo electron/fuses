@@ -1,15 +1,18 @@
 {
   "name": "@electron/fuses",
-  "version": "1.5.0",
+  "version": "0.0.0-development",
   "main": "dist/index.js",
   "license": "MIT",
   "bin": {
     "electron-fuses": "dist/bin.js"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest",
+    "prepublishOnly": "tsc"
   },
   "devDependencies": {
+    "@continuous-auth/semantic-release-npm": "^2.0.0",
     "@electron/get": "^2.0.1",
     "@electron/universal": "^1.3.0",
     "@types/fs-extra": "^9.0.1",

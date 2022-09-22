@@ -1,0 +1,76 @@
+step-restore-cache: &step-restore-cache
+  restore_cache:
+    keys:
+      - v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
+      - v1-dependencies-{{ arch }}
+
+commands:
+  test:
+    steps:
+      - run: git config --global core.autocrlf input
+      - checkout
+      - *step-restore-cache
+      - run: npx yarn --frozen-lockfile
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run: npx yarn test
+
+version: 2.1
+orbs:
+  win: circleci/windows@5.0.0
+jobs:
+  test-linux-16:
+    docker:
+      - image: cimg/node:16.17
+    steps:
+      - test
+  test-mac:
+    macos:
+      xcode: "13.0.0"
+    steps:
+      - test
+  # test-windows:
+  #   executor:
+  #     name: win/default
+  #     shell: bash.exe
+  #   steps:
+  #     - run: choco install wget -y
+  #     - run:
+  #        command: wget https://nodejs.org/dist/v16.17.0/node-v16.17.0-x86.msi -P C:\Users\circleci\Downloads\
+  #        shell: cmd.exe
+  #     - run: MsiExec.exe /i C:\Users\circleci\Downloads\node-v16.17.0-x86.msi /qn
+  #     - run: 
+  #         command: |
+  #             Start-Process powershell -verb runAs -Args "-start GeneralProfile"
+  #             nvm install 16.17.0
+  #             nvm use 16.17.0
+  #     - test
+
+  release:
+    docker:
+      - image: cimg/node:14.20
+    steps:
+      - checkout
+      - *step-restore-cache
+      - run: npx yarn
+      - run: npx semantic-release@17.4.5
+workflows:
+  version: 2
+  test_and_release:
+    # Run the test jobs first, then the release only when all the test jobs are successful
+    jobs:
+      - test-linux-16
+      - test-mac
+      # - test-windows
+      - release:
+          requires:
+            - test-linux-16
+            - test-mac
+            # - test-windows
+          filters:
+            branches:
+              only:
+                - main
+

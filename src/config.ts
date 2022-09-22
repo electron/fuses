@@ -12,6 +12,7 @@ export enum FuseV1Options {
   EnableNodeCliInspectArguments = 3,
   EnableEmbeddedAsarIntegrityValidation = 4,
   OnlyLoadAppFromAsar = 5,
+  LoadBrowserProcessSpecificV8Snapshot = 6,
 }
 
 export type FuseV1Config<T = boolean> = {

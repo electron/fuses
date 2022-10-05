@@ -150,7 +150,7 @@ export const flipFuses = async (
   pathToElectron: string,
   fuseConfig: FuseConfig,
 ): Promise<number> => {
-  let numSentinels;
+  let numSentinels: number;
 
   switch (fuseConfig.version) {
     case FuseVersion.V1:

@@ -150,14 +150,17 @@ export const flipFuses = async (
   pathToElectron: string,
   fuseConfig: FuseConfig,
 ): Promise<number> => {
+  let numSentinels: number;
+
   switch (fuseConfig.version) {
     case FuseVersion.V1:
-      return await setFuseWire(
+      numSentinels = await setFuseWire(
         pathToElectron,
         fuseConfig.version,
         buildFuseV1Wire.bind(null, fuseConfig),
         (i) => FuseV1Options[i],
       );
+      break;
     default:
       throw new Error(`Unsupported fuse version number: ${fuseConfig.version}`);
   }
@@ -178,4 +181,6 @@ export const flipFuses = async (
       throw new Error(`Ad-hoc codesign failed with status: ${result.status}`);
     }
   }
+
+  return numSentinels;
 };

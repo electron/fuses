@@ -126,7 +126,7 @@ export const getCurrentFuseWire = async (
 
   if (fuseWirePosition - SENTINEL.length === -1) {
     throw new Error(
-      'Could not find sentinel in the provided ELectron binary, fuses are only supported in Electron 12 and higher',
+      'Could not find sentinel in the provided Electron binary, fuses are only supported in Electron 12 and higher',
     );
   }
   const fuseWireVersion = (electron[fuseWirePosition] as any) as FuseVersion;

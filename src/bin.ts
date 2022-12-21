@@ -62,7 +62,7 @@ if (mode === 'read') {
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
-      const { version, resetAdHocDarwinSignature, ...rest } = config;
+      const { version, resetAdHocDarwinSignature, ignoreNotSupportedFuses, ...rest } = config;
       console.log(`Fuse Version: ${chalk.cyan(`v${version}`)}`);
 
       switch (config.version) {
@@ -101,7 +101,7 @@ if (mode === 'read') {
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
-      const { version, resetAdHocDarwinSignature, ...rest } = config;
+      const { version, resetAdHocDarwinSignature, ignoreNotSupportedFuses, ...rest } = config;
       console.log(`Fuse Version: ${chalk.cyan(`v${version}`)}`);
 
       const keyPairs = argv._ || [];

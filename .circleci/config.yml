@@ -19,7 +19,8 @@ commands:
 
 version: 2.1
 orbs:
-  win: circleci/windows@5.0.0
+  # win: circleci/windows@5.0.0
+  cfa: continuousauth/npm@1.0.2
 jobs:
   test-linux-16:
     docker:
@@ -47,24 +48,14 @@ jobs:
   #             nvm install 16.17.0
   #             nvm use 16.17.0
   #     - test
-
-  release:
-    docker:
-      - image: cimg/node:14.20
-    steps:
-      - checkout
-      - *step-restore-cache
-      - run: npx yarn
-      - run: npx semantic-release@17.4.5
 workflows:
-  version: 2
   test_and_release:
     # Run the test jobs first, then the release only when all the test jobs are successful
     jobs:
       - test-linux-16
       - test-mac
       # - test-windows
-      - release:
+      - cfa/release:
           requires:
             - test-linux-16
             - test-mac
@@ -73,4 +64,4 @@ workflows:
             branches:
               only:
                 - main
-
+          context: cfa-release

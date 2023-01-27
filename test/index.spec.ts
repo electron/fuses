@@ -102,7 +102,7 @@ describe('flipFuses()', () => {
 
     await flipFuses(electronPath, {
       version: FuseVersion.V1,
-      ignoreNotSupportedFuses: true,
+      ignoreUnsupportedFuses: true,
       [FuseV1Options.EnableCookieEncryption]: true,
       [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true,
     });

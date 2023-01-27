@@ -14,14 +14,12 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
   const badFuseOption = Object.keys(nonVersionConfig).find(
     (fuseOption) => parseInt(fuseOption, 10) >= wireLength,
   );
-  if (badFuseOption !== undefined) {
-    if (!config.ignoreNotSupportedFuses) {
-      throw new Error(
-        `Trying to configure ${
-          FuseV1Options[badFuseOption as any]
-        } but the fuse wire in this version of Electron is not long enough`,
-      );
-    }
+  if (badFuseOption !== undefined && !config.ignoreUnsupportedFuses) {
+    throw new Error(
+      `Trying to configure ${
+        FuseV1Options[badFuseOption as any]
+      } but the fuse wire in this version of Electron is not long enough`,
+    );
   }
 
   return [

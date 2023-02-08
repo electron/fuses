@@ -5,6 +5,18 @@ step-restore-cache: &step-restore-cache
       - v1-dependencies-{{ arch }}
 
 commands:
+  install:
+    parameters:
+      windows:
+        default: false
+        type: boolean
+    steps:
+      - node/install:
+          node-version: "16.19.0"
+      - when:
+          condition: << parameters.windows >>
+          steps:
+            - run: nvm use 16.19.0
   test:
     steps:
       - run: git config --global core.autocrlf input
@@ -19,47 +31,43 @@ commands:
 
 version: 2.1
 orbs:
-  # win: circleci/windows@5.0.0
   cfa: continuousauth/npm@1.0.2
+  node: circleci/node@5.1.0
+  win: circleci/windows@5.0.0
 jobs:
   test-linux-16:
     docker:
-      - image: cimg/node:16.17
+      - image: cimg/base:stable
     steps:
+      - install
       - test
   test-mac:
     macos:
       xcode: "13.0.0"
+    resource_class: macos.x86.medium.gen2
     steps:
+      - install
       - test
-  # test-windows:
-  #   executor:
-  #     name: win/default
-  #     shell: bash.exe
-  #   steps:
-  #     - run: choco install wget -y
-  #     - run:
-  #        command: wget https://nodejs.org/dist/v16.17.0/node-v16.17.0-x86.msi -P C:\Users\circleci\Downloads\
-  #        shell: cmd.exe
-  #     - run: MsiExec.exe /i C:\Users\circleci\Downloads\node-v16.17.0-x86.msi /qn
-  #     - run: 
-  #         command: |
-  #             Start-Process powershell -verb runAs -Args "-start GeneralProfile"
-  #             nvm install 16.17.0
-  #             nvm use 16.17.0
-  #     - test
+  test-windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - install:
+          windows: true
+      - test
 workflows:
   test_and_release:
     # Run the test jobs first, then the release only when all the test jobs are successful
     jobs:
       - test-linux-16
       - test-mac
-      # - test-windows
+      - test-windows
       - cfa/release:
           requires:
             - test-linux-16
             - test-mac
-            # - test-windows
+            - test-windows
           filters:
             branches:
               only:

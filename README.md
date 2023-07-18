@@ -1,6 +1,6 @@
 # @electron/fuses
 
-> Flip [Electron Fuses](https://github.com/electron/electron/blob/master/docs/tutorial/fuses.md) and customize your packaged build of Electron
+> Flip [Electron Fuses](https://github.com/electron/electron/blob/main/docs/tutorial/fuses.md) and customize your packaged build of Electron
 
 [![CircleCI](https://circleci.com/gh/electron/fuses.svg?style=shield)](https://circleci.com/gh/electron/fuses)
 [![npm version](http://img.shields.io/npm/v/@electron/fuses.svg)](https://npmjs.org/package/@electron/fuses)

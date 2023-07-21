@@ -26,6 +26,7 @@ const writeHelpText = `electron-fuses write --app [path-to-app] <...key=on/off>`
 if (mode !== 'read' && mode !== 'write') {
   console.error('Invalid mode, check the usage below:');
   console.info(readHelpText);
+  console.info(writeHelpText);
   process.exit(0);
 }
 

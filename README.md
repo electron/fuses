@@ -7,6 +7,8 @@
 
 ## Usage
 
+### Via JavaScript
+
 ```typescript
 import { flipFuses, FuseVersion, FuseV1Options } from '@electron/fuses';
 
@@ -24,6 +26,13 @@ await flipFuses(
     [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true, // Loads V8 Snapshot from `browser_v8_context_snapshot.bin` for the browser process
   },
 );
+```
+
+### From the command line
+
+```sh
+$ npx @electron/fuses read --app /Applications/Foo.app
+$ npx @electron/fuses write --app /Applications/Foo.app <...key=on/off>
 ```
 
 ### Apple Silicon

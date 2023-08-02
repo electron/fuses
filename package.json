@@ -42,7 +42,7 @@
     "dist",
     "README.md"
   ],
-  "description": "Flip [Electron Fuses](https://github.com/electron/electron/blob/master/docs/tutorial/fuses.md) and customize your packaged build of Electron",
+  "description": "Flip Electron Fuses and customize your packaged build of Electron",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/electron/fuses.git"

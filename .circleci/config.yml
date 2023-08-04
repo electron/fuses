@@ -1,73 +1,32 @@
-step-restore-cache: &step-restore-cache
-  restore_cache:
-    keys:
-      - v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
-      - v1-dependencies-{{ arch }}
-
-commands:
-  install:
-    parameters:
-      windows:
-        default: false
-        type: boolean
-    steps:
-      - node/install:
-          node-version: "16.19.0"
-      - when:
-          condition: << parameters.windows >>
-          steps:
-            - run: nvm use 16.19.0
-  test:
-    steps:
-      - run: git config --global core.autocrlf input
-      - checkout
-      - *step-restore-cache
-      - run: npx yarn --frozen-lockfile
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
-      - run: npx yarn test
-
 version: 2.1
+
 orbs:
   cfa: continuousauth/npm@1.0.2
-  node: circleci/node@5.1.0
-  win: circleci/windows@5.0.0
-jobs:
-  test-linux-16:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - install
-      - test
-  test-mac:
-    macos:
-      xcode: "14.3.0"
-    resource_class: macos.x86.medium.gen2
-    steps:
-      - install
-      - test
-  test-windows:
-    executor:
-      name: win/default
-      shell: bash.exe
-    steps:
-      - install:
-          windows: true
-      - test
+  node: electronjs/node@1.1.0
+
 workflows:
   test_and_release:
     # Run the test jobs first, then the release only when all the test jobs are successful
     jobs:
-      - test-linux-16
-      - test-mac
-      - test-windows
+      - node/test:
+          name: test-<< matrix.executor >>-<< matrix.node-version >>
+          pre-steps:
+            - run: git config --global core.autocrlf input
+          matrix:
+            alias: test
+            parameters:
+              executor:
+                - node/linux
+                - node/macos
+                - node/windows
+              node-version:
+                - 20.2.0
+                - 18.17.0
+                - 16.20.1
+                - 14.21.3
       - cfa/release:
           requires:
-            - test-linux-16
-            - test-mac
-            - test-windows
+            - test
           filters:
             branches:
               only:

@@ -13,6 +13,7 @@ export enum FuseV1Options {
   EnableEmbeddedAsarIntegrityValidation = 4,
   OnlyLoadAppFromAsar = 5,
   LoadBrowserProcessSpecificV8Snapshot = 6,
+  GrantFileProtocolExtraPrivileges = 7,
 }
 
 export type FuseV1Config<T = boolean> = {

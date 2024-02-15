@@ -63,7 +63,7 @@ if (mode === 'read') {
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
-      const { version, resetAdHocDarwinSignature, ...rest } = config;
+      const { version, resetAdHocDarwinSignature, ignoreUnsupportedFuses, ...rest } = config;
       console.log(`Fuse Version: ${chalk.cyan(`v${version}`)}`);
 
       switch (config.version) {
@@ -102,7 +102,7 @@ if (mode === 'read') {
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
-      const { version, resetAdHocDarwinSignature, ...rest } = config;
+      const { version } = config;
       console.log(`Fuse Version: ${chalk.cyan(`v${version}`)}`);
 
       const keyPairs = argv._ || [];
@@ -156,10 +156,11 @@ if (mode === 'read') {
       console.log('Writing to app:', chalk.cyan(path.basename(argv.app!)));
 
       function adaptConfig(config: FuseConfig<FuseState>): FuseConfig<boolean> {
-        const { version, resetAdHocDarwinSignature, ...rest } = config;
+        const { version, resetAdHocDarwinSignature, ignoreUnsupportedFuses, ...rest } = config;
         const fuseConfig: FuseConfig<boolean> = {
           version,
           resetAdHocDarwinSignature,
+          ignoreUnsupportedFuses,
         };
 
         for (const key of Object.keys(rest)) {

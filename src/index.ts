@@ -14,7 +14,7 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
   const badFuseOption = Object.keys(nonVersionConfig).find(
     (fuseOption) => parseInt(fuseOption, 10) >= wireLength,
   );
-  if (badFuseOption !== undefined) {
+  if (badFuseOption !== undefined && !config.ignoreUnsupportedFuses) {
     throw new Error(
       `Trying to configure ${
         FuseV1Options[badFuseOption as any]

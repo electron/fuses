@@ -48,11 +48,11 @@ describe('flipFuses()', () => {
     expect((await getCurrentFuseWire(electronPath))[FuseV1Options.EnableCookieEncryption]).toEqual(
       FuseState.DISABLE,
     );
-    const sentinels = await flipFuses(electronPath, {
+    const fuseWiresSeen = await flipFuses(electronPath, {
       version: FuseVersion.V1,
       [FuseV1Options.EnableCookieEncryption]: true,
     });
-    expect(sentinels).toEqual(1);
+    expect(fuseWiresSeen).toEqual(1);
     expect((await getCurrentFuseWire(electronPath))[FuseV1Options.EnableCookieEncryption]).toEqual(
       FuseState.ENABLE,
     );
@@ -97,11 +97,11 @@ describe('flipFuses()', () => {
         force: false,
       });
 
-      const sentinels = await flipFuses(electronPathUniversal, {
+      const fuseWiresSeen = await flipFuses(electronPathUniversal, {
         version: FuseVersion.V1,
         [FuseV1Options.EnableCookieEncryption]: true,
       });
-      expect(sentinels).toEqual(2);
+      expect(fuseWiresSeen).toEqual(2);
     });
   }
 });

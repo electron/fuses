@@ -5,12 +5,12 @@ export const getFuseHeaderPositions = async (fuseFilePath: string, firstOnly = f
   let fileLength = 0;
 
   const firstAndLast = await new Promise<[number, number]>((resolve, reject) => {
-    let firstAndLast: [number, number] = [-1, -1];
+    const firstAndLast: [number, number] = [-1, -1];
 
     // Keep a rolling list of chunks to not miss sentinels on chunk boundaries.
     let chunksPosition = 0;
     let chunksLength = 0;
-    let chunks: Buffer[] = [];
+    const chunks: Buffer[] = [];
 
     const readStream = fs.createReadStream(fuseFilePath);
 
@@ -24,7 +24,7 @@ export const getFuseHeaderPositions = async (fuseFilePath: string, firstOnly = f
         const joined = Buffer.concat(chunks);
 
         if (firstAndLast[0] === -1) {
-          let firstIndex = joined.indexOf(SENTINEL);
+          const firstIndex = joined.indexOf(SENTINEL);
           if (firstIndex !== -1) {
             firstAndLast[0] = chunksPosition + firstIndex;
             if (firstOnly) {
@@ -35,7 +35,7 @@ export const getFuseHeaderPositions = async (fuseFilePath: string, firstOnly = f
           }
         }
 
-        let lastIndex = joined.lastIndexOf(SENTINEL);
+        const lastIndex = joined.lastIndexOf(SENTINEL);
         if (lastIndex !== -1) {
           firstAndLast[1] = chunksPosition + lastIndex;
         }
@@ -95,7 +95,7 @@ export const getFuseHeaderPositions = async (fuseFilePath: string, firstOnly = f
 };
 
 export const readBytesOrClose = async (fileHandle: number, length: number, position: number) => {
-  let buffer = Buffer.alloc(length);
+  const buffer = Buffer.alloc(length);
   let bytesReadTotal = 0;
 
   while (bytesReadTotal < length) {

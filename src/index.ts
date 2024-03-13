@@ -2,7 +2,8 @@ import * as cp from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { FuseConfig, FuseV1Config, FuseV1Options, FuseVersion } from './config';
-import { FuseState, SENTINEL } from './constants';
+import { FuseState } from './constants';
+import { getFuseHeaderPositions, readBytesOrClose, writeBytesOrClose } from './fs';
 
 export * from './config';
 
@@ -64,25 +65,14 @@ const setFuseWire = async (
   fuseNamer: (index: number) => string,
 ) => {
   const fuseFilePath = pathToFuseFile(pathToElectron);
-  const electron = await fs.readFile(fuseFilePath);
+  const headerPositions = await getFuseHeaderPositions(fuseFilePath);
+  const fileHandle = await fs.open(fuseFilePath, 'r+');
 
-  const firstSentinel = electron.indexOf(SENTINEL);
-  const lastSentinel = electron.lastIndexOf(SENTINEL);
-  // If the last sentinel is different to the first sentinel we are probably in a universal build
-  // We should flip the fuses in both sentinels to affect both slices of the universal binary
-  const sentinels =
-    firstSentinel === lastSentinel ? [firstSentinel] : [firstSentinel, lastSentinel];
+  for (const headerPosition of headerPositions) {
+    const header = await readBytesOrClose(fileHandle, 2, headerPosition);
+    const [fuseWireVersion, fuseWireLength] = [header[0], header[1]];
+    const fuseWireBuffer = await readBytesOrClose(fileHandle, fuseWireLength, headerPosition + 2);
 
-  for (const indexOfSentinel of sentinels) {
-    if (indexOfSentinel === -1) {
-      throw new Error(
-        'Could not find sentinel in the provided Electron binary, fuses are only supported in Electron 12 and higher',
-      );
-    }
-
-    const fuseWirePosition = indexOfSentinel + SENTINEL.length;
-
-    const fuseWireVersion = electron[fuseWirePosition];
     if (parseInt(fuseVersion, 10) !== fuseWireVersion) {
       throw new Error(
         `Provided fuse wire version "${parseInt(
@@ -91,12 +81,12 @@ const setFuseWire = async (
         )}" does not match watch was found in the binary "${fuseWireVersion}".  You should update your usage of @electron/fuses.`,
       );
     }
-    const fuseWireLength = electron[fuseWirePosition + 1];
 
     const wire = fuseWireBuilder(fuseWireLength).slice(0, fuseWireLength);
+    let changesMade = false;
+
     for (let i = 0; i < wire.length; i++) {
-      const idx = fuseWirePosition + 2 + i;
-      const currentState = electron[idx];
+      const currentState = fuseWireBuffer[i];
       const newState = wire[i];
 
       if (currentState === FuseState.REMOVED && newState !== FuseState.INHERIT) {
@@ -106,37 +96,43 @@ const setFuseWire = async (
           )}" that has been marked as removed, setting this fuse is a noop`,
         );
       }
+
       if (newState === FuseState.INHERIT) continue;
-      electron[idx] = newState;
+
+      fuseWireBuffer[i] = newState;
+      changesMade = true;
+    }
+
+    if (changesMade) {
+      await writeBytesOrClose(fileHandle, fuseWireBuffer, headerPosition + 2);
     }
   }
 
-  await fs.writeFile(fuseFilePath, electron);
+  await fs.close(fileHandle);
 
-  return sentinels.length;
+  return headerPositions.length;
 };
 
 export const getCurrentFuseWire = async (
   pathToElectron: string,
 ): Promise<FuseConfig<FuseState>> => {
   const fuseFilePath = pathToFuseFile(pathToElectron);
-  const electron = await fs.readFile(fuseFilePath);
-  const fuseWirePosition = electron.indexOf(SENTINEL) + SENTINEL.length;
 
-  if (fuseWirePosition - SENTINEL.length === -1) {
-    throw new Error(
-      'Could not find sentinel in the provided Electron binary, fuses are only supported in Electron 12 and higher',
-    );
-  }
-  const fuseWireVersion = (electron[fuseWirePosition] as any) as FuseVersion;
-  const fuseWireLength = electron[fuseWirePosition + 1];
+  const headerPosition = (await getFuseHeaderPositions(fuseFilePath, true))[0];
+
+  const fileHandle = await fs.open(fuseFilePath, 'r');
+  const header = await readBytesOrClose(fileHandle, 2, headerPosition);
+  const [fuseWireVersion, fuseWireLength] = [(header[0] as any) as FuseVersion, header[1]];
+  const fuseWireBuffer = await readBytesOrClose(fileHandle, fuseWireLength, headerPosition + 2);
+  await fs.close(fileHandle);
+
   const fuseConfig: FuseConfig<FuseState> = {
     version: `${fuseWireVersion}` as FuseVersion,
   };
 
   for (let i = 0; i < fuseWireLength; i++) {
-    const idx = fuseWirePosition + 2 + i;
-    const currentState = electron[idx];
+    const currentState = fuseWireBuffer[i];
+
     switch (fuseConfig.version) {
       case FuseVersion.V1:
         fuseConfig[i as FuseV1Options] = currentState as FuseState;
@@ -151,11 +147,11 @@ export const flipFuses = async (
   pathToElectron: string,
   fuseConfig: FuseConfig,
 ): Promise<number> => {
-  let numSentinels: number;
+  let fuseWiresSeen: number;
 
   switch (fuseConfig.version) {
     case FuseVersion.V1:
-      numSentinels = await setFuseWire(
+      fuseWiresSeen = await setFuseWire(
         pathToElectron,
         fuseConfig.version,
         buildFuseV1Wire.bind(null, fuseConfig),
@@ -183,5 +179,5 @@ export const flipFuses = async (
     }
   }
 
-  return numSentinels;
+  return fuseWiresSeen;
 };

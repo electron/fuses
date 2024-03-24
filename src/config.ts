@@ -28,6 +28,9 @@ export type FuseV1Config<T = boolean> = {
    * defaults to "false"
    */
   strictlyRequireAllFuses?: boolean;
-} & Partial<Record<FuseV1Options, T>>;
+} & (
+  | (Partial<Record<FuseV1Options, T>> & { strictlyRequireAllFuses?: false | undefined })
+  | (Record<FuseV1Options, T> & { strictlyRequireAllFuses: true })
+);
 
 export type FuseConfig<T = boolean> = FuseV1Config<T>;

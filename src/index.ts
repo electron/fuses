@@ -60,6 +60,7 @@ const pathToFuseFile = (pathToElectron: string) => {
 const setFuseWire = async (
   pathToElectron: string,
   fuseVersion: FuseVersion,
+  strictlyRequireAllFuses: boolean,
   fuseWireBuilder: (wireLength: number) => FuseState[],
   fuseNamer: (index: number) => string,
 ) => {
@@ -94,6 +95,11 @@ const setFuseWire = async (
     const fuseWireLength = electron[fuseWirePosition + 1];
 
     const wire = fuseWireBuilder(fuseWireLength).slice(0, fuseWireLength);
+    if (wire.length < fuseWireLength && strictlyRequireAllFuses) {
+      throw new Error(
+        `strictlyRequireAllFuses: The fuse wire in the Electron binary has ${fuseWireLength} fuses but you only provided a config for ${wire.length} fuses, you may need to update @electron/fuses or provide additional fuse settings`,
+      );
+    }
     for (let i = 0; i < wire.length; i++) {
       const idx = fuseWirePosition + 2 + i;
       const currentState = electron[idx];
@@ -106,7 +112,14 @@ const setFuseWire = async (
           )}" that has been marked as removed, setting this fuse is a noop`,
         );
       }
-      if (newState === FuseState.INHERIT) continue;
+      if (newState === FuseState.INHERIT) {
+        if (strictlyRequireAllFuses) {
+          throw new Error(
+            `strictlyRequireAllFuses: Missing explicit configuration for fuse ${fuseNamer(i)}`,
+          );
+        }
+        continue;
+      }
       electron[idx] = newState;
     }
   }
@@ -158,6 +171,7 @@ export const flipFuses = async (
       numSentinels = await setFuseWire(
         pathToElectron,
         fuseConfig.version,
+        fuseConfig.strictlyRequireAllFuses || false,
         buildFuseV1Wire.bind(null, fuseConfig),
         (i) => FuseV1Options[i],
       );

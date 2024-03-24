@@ -55,3 +55,24 @@ await flipFuses(
   },
 );
 ```
+
+### New Fuses
+
+If you want to ensure you provide a config for every fuse, even newly added fuses during Electron upgrades
+you can set the `strictlyRequireAllFuses` option to `true`. This will hard fail the build if you are on
+a version of `@electron/fuses` that doesn't have configuration options for every fuse in the Electron binary
+you are targetting or if you don't provide a configuration for a specific fuse present in the Electron binary
+you are targetting.
+
+```typescript
+import { flipFuses, FuseVersion, FuseV1Options } from '@electron/fuses';
+
+await flipFuses(
+  require('electron'),
+  {
+    version: FuseVersion.V1,
+    strictlyRequireAllFuses: true,
+    [FuseV1Options.RunAsNode]: false,
+  },
+);
+```

@@ -104,4 +104,47 @@ describe('flipFuses()', () => {
       expect(sentinels).toEqual(2);
     });
   }
+
+  describe('strictlyRequireAllFuses', () => {
+    it('should fail when missing fuse configuration', async () => {
+      const electronPath = await getElectronLocally('20.0.0', 'darwin', 'x64');
+      await expect(
+        // @ts-expect-error strictlyRequireAllFuses is actually type safe, so we have to _really_ try here
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          strictlyRequireAllFuses: true,
+          [FuseV1Options.EnableCookieEncryption]: true,
+        }),
+      ).rejects.toMatchInlineSnapshot(
+        `[Error: strictlyRequireAllFuses: Missing explicit configuration for fuse RunAsNode]`,
+      );
+      // Doesn't actually flip any fuses
+      expect(
+        (await getCurrentFuseWire(electronPath))[FuseV1Options.EnableCookieEncryption],
+      ).toEqual(FuseState.DISABLE);
+    });
+  });
+
+  // This test may have to be updated as we add new fuses, update the Electron version and add a new config for the fuse wire
+  it('should succeed when all fuse configurations are provided', async () => {
+    const electronPath = await getElectronLocally('29.0.0', 'darwin', 'x64');
+    await expect(
+      flipFuses(electronPath, {
+        version: FuseVersion.V1,
+        strictlyRequireAllFuses: true,
+        [FuseV1Options.EnableCookieEncryption]: true,
+        [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+        [FuseV1Options.EnableNodeCliInspectArguments]: true,
+        [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: true,
+        [FuseV1Options.GrantFileProtocolExtraPrivileges]: true,
+        [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true,
+        [FuseV1Options.OnlyLoadAppFromAsar]: true,
+        [FuseV1Options.RunAsNode]: true,
+      }),
+    ).resolves.toMatchInlineSnapshot(`1`);
+    // Actually flips a fuse
+    expect((await getCurrentFuseWire(electronPath))[FuseV1Options.EnableCookieEncryption]).toEqual(
+      FuseState.ENABLE,
+    );
+  });
 });

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "jest && tsc",
     "prepublishOnly": "tsc",
     "prepare": "husky install"
   },

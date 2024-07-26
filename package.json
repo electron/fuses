@@ -6,6 +6,9 @@
   "bin": {
     "electron-fuses": "dist/bin.js"
   },
+  "engines": {
+    "node": "^14.15.0 || ^16.10.0 || >=18.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "test": "jest && tsc",

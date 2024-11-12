@@ -102,7 +102,7 @@ describe('flipFuses()', () => {
         [FuseV1Options.EnableCookieEncryption]: true,
       });
       expect(sentinels).toEqual(2);
-    });
+    }, 120000); // TODO(dsanders11): Remove timeout once we're no longer running CI under Rosetta
   }
 
   describe('strictlyRequireAllFuses', () => {

@@ -71,7 +71,7 @@ if (mode === 'read') {
           for (const key of Object.keys(rest)) {
             console.log(
               `  ${chalk.yellow(FuseV1Options[key as any])} is ${stringForState(
-                rest[(key as any) as keyof typeof rest]!,
+                rest[key as any as keyof typeof rest]!,
               )}`,
             );
           }

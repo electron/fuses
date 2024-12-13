@@ -2,7 +2,7 @@
 
 import chalk from 'chalk';
 import minimist from 'minimist';
-import path from 'node:path';
+import path from 'path';
 
 import { flipFuses, getCurrentFuseWire } from '.';
 import { FuseConfig, FuseV1Options, FuseVersion } from './config';

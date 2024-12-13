@@ -1,6 +1,6 @@
 import { makeUniversalApp } from '@electron/universal';
-import { promises as fs } from 'node:fs';
-import * as path from 'node:path';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 import { FuseState } from '../src/constants';
 import { flipFuses, FuseV1Options, FuseVersion, getCurrentFuseWire } from '../src/index';

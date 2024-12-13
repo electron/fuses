@@ -1,6 +1,6 @@
 import { makeUniversalApp } from '@electron/universal';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { promises as fs } from 'node:fs';
+import * as path from 'node:path';
 
 import { FuseState } from '../src/constants';
 import { flipFuses, FuseV1Options, FuseVersion, getCurrentFuseWire } from '../src/index';
@@ -15,7 +15,7 @@ import {
 describe('getCurrentFuseWire()', () => {
   afterEach(async () => {
     while (tmpPaths.length) {
-      await fs.remove(tmpPaths.pop()!);
+      await fs.rm(tmpPaths.pop()!, { recursive: true });
     }
   });
 
@@ -84,7 +84,7 @@ describe('flipFuses()', () => {
       const electronPathX64 = await getElectronLocally('20.0.0', 'darwin', 'x64');
       const electronPathArm64 = await getElectronLocally('20.0.0', 'darwin', 'arm64');
       for (const electronPath of [electronPathArm64, electronPathX64]) {
-        await fs.move(
+        await fs.rename(
           path.resolve(electronPath, 'Contents', 'Resources', 'default_app.asar'),
           path.resolve(electronPath, 'Contents', 'Resources', 'app.asar'),
         );

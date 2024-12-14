@@ -1,6 +1,6 @@
 import { downloadArtifact } from '@electron/get';
 import * as extractZip from 'extract-zip';
-import * as fs from 'fs-extra';
+import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { FuseConfig, FuseV1Options } from '../src';

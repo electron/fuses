@@ -1,5 +1,5 @@
 import * as cp from 'child_process';
-import * as fs from 'fs-extra';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 import { FuseConfig, FuseV1Config, FuseV1Options, FuseVersion } from './config';
 import { FuseState, SENTINEL } from './constants';

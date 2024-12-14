@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import * as chalk from 'chalk';
-import * as minimist from 'minimist';
-import * as path from 'path';
+import chalk from 'chalk';
+import minimist from 'minimist';
+import path from 'path';
 
 import { flipFuses, getCurrentFuseWire } from '.';
 import { FuseConfig, FuseV1Options, FuseVersion } from './config';

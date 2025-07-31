@@ -1,22 +1,11 @@
 #!/usr/bin/env node
 
-import chalk from 'chalk';
-import minimist from 'minimist';
-import path from 'path';
+import path from 'node:path';
+import { parseArgs, styleText } from 'node:util';
 
-import { flipFuses, getCurrentFuseWire } from '.';
-import { FuseConfig, FuseV1Options, FuseVersion } from './config';
-import { FuseState } from './constants';
-
-interface FuseReadCLIArgs {
-  app?: string;
-  help?: boolean;
-}
-
-interface FuseWriteCLIArgs {
-  app?: string;
-  help?: boolean;
-}
+import { flipFuses, getCurrentFuseWire } from './index.js';
+import { FuseConfig, FuseV1Options, FuseVersion } from './config.js';
+import { FuseState } from './constants.js';
 
 const mode = process.argv[2];
 
@@ -33,20 +22,28 @@ if (mode !== 'read' && mode !== 'write') {
 function stringForState(state: FuseState) {
   switch (state) {
     case FuseState.ENABLE:
-      return chalk.green('Enabled');
+      return styleText(['green'], 'Enabled');
     case FuseState.DISABLE:
-      return chalk.red('Disabled');
+      return styleText(['red'], 'Disabled');
     case FuseState.INHERIT:
-      return chalk.yellow('Inherited');
+      return styleText(['yellow'], 'Inherited');
     case FuseState.REMOVED:
-      return chalk.strikethrough(chalk.red('Removed'));
+      return styleText(['red', 'strikethrough'], 'Removed');
   }
 }
 
 if (mode === 'read') {
-  const argv = minimist<FuseReadCLIArgs>(process.argv.slice(3), {
-    string: ['app'],
-    boolean: ['help'],
+  const { values: argv } = parseArgs({
+    args: process.argv.slice(3),
+    options: {
+      app: {
+        type: 'string',
+      },
+      help: {
+        type: 'boolean',
+        default: false,
+      },
+    },
   });
 
   if (argv.help) {
@@ -59,19 +56,19 @@ if (mode === 'read') {
     process.exit(1);
   }
 
-  console.log('Analyzing app:', chalk.cyan(path.basename(argv.app)));
+  console.log('Analyzing app:', styleText(['cyan'], path.basename(argv.app)));
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
       const { version, resetAdHocDarwinSignature, strictlyRequireAllFuses, ...rest } = config;
-      console.log(`Fuse Version: ${chalk.cyan(`v${version}`)}`);
+      console.log(`Fuse Version: ${styleText(['cyan'], `v${version}`)}`);
 
       switch (config.version) {
         case FuseVersion.V1:
           for (const key of Object.keys(rest)) {
             console.log(
-              `  ${chalk.yellow(FuseV1Options[key as any])} is ${stringForState(
-                rest[(key as any) as keyof typeof rest]!,
+              `  ${styleText(['yellow'], FuseV1Options[key as any])} is ${stringForState(
+                rest[key as any as keyof typeof rest]!,
               )}`,
             );
           }
@@ -83,9 +80,18 @@ if (mode === 'read') {
       process.exit(1);
     });
 } else {
-  const argv = minimist<FuseWriteCLIArgs>(process.argv.slice(3), {
-    string: ['app'],
-    boolean: ['help'],
+  const { values: argv, positionals } = parseArgs({
+    args: process.argv.slice(3),
+    allowPositionals: true,
+    options: {
+      app: {
+        type: 'string',
+      },
+      help: {
+        type: 'boolean',
+        default: false,
+      },
+    },
   });
 
   if (argv.help) {
@@ -98,14 +104,14 @@ if (mode === 'read') {
     process.exit(1);
   }
 
-  console.log('Analyzing app:', chalk.cyan(path.basename(argv.app)));
+  console.log('Analyzing app:', styleText(['cyan'], path.basename(argv.app)));
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
       const { version, resetAdHocDarwinSignature, ...rest } = config;
-      console.log(`Fuse Version: ${chalk.cyan(`v${version}`)}`);
+      console.log(`Fuse Version: ${styleText(['cyan'], `v${version}`)}`);
 
-      const keyPairs = argv._ || [];
+      const keyPairs = positionals || [];
       for (const keyPair of keyPairs) {
         const [key, state] = keyPair.split('=');
         if (!key || !state) {
@@ -115,9 +121,9 @@ if (mode === 'read') {
         }
 
         if (state !== 'on' && state !== 'off') {
-          console.error('Invalid fuse state:', chalk.yellow(keyPair));
+          console.error('Invalid fuse state:', styleText(['yellow'], keyPair));
           console.error(
-            `Fuses can only be set to the "${chalk.green('on')}" or "${chalk.red('off')}" state`,
+            `Fuses can only be set to the "${styleText(['green'], 'on')}" or "${styleText(['red'], 'off')}" state`,
           );
           process.exit(1);
         }
@@ -126,10 +132,10 @@ if (mode === 'read') {
           case FuseVersion.V1:
             const validFuseNames = Object.keys(FuseV1Options).filter((k) => !/^[0-9]+$/.test(k));
             if (!validFuseNames.includes(key)) {
-              console.error('Invalid fuse name', chalk.yellow(key));
+              console.error('Invalid fuse name', styleText(['yellow'], key));
               console.error(
                 'Expected name to be one of',
-                chalk.yellow(JSON.stringify(validFuseNames)),
+                styleText(['yellow'], JSON.stringify(validFuseNames)),
               );
               process.exit(1);
             }
@@ -137,13 +143,13 @@ if (mode === 'read') {
             const newState = state === 'on' ? FuseState.ENABLE : FuseState.DISABLE;
             if (currentState === newState) {
               console.log(
-                `  ${chalk.yellow(key)} is already ${stringForState(
+                `  ${styleText(['yellow'], key)} is already ${stringForState(
                   currentState,
                 )} and will not be changed`,
               );
             } else {
               console.log(
-                `  ${chalk.yellow(key)} is ${stringForState(
+                `  ${styleText(['yellow'], key)} is ${stringForState(
                   currentState,
                 )} and will become ${stringForState(newState)}`,
               );
@@ -153,7 +159,7 @@ if (mode === 'read') {
         }
       }
 
-      console.log('Writing to app:', chalk.cyan(path.basename(argv.app!)));
+      console.log('Writing to app:', styleText(['cyan'], path.basename(argv.app!)));
 
       function adaptConfig(config: FuseConfig<FuseState>): FuseConfig<boolean> {
         const { version, resetAdHocDarwinSignature, ...rest } = config;
@@ -172,7 +178,7 @@ if (mode === 'read') {
       return flipFuses(argv.app!, adaptConfig(config));
     })
     .then(() => {
-      console.log(chalk.green('Fuses written to disk'));
+      console.log(styleText(['green'], 'Fuses written to disk'));
     })
     .catch((err) => {
       console.error(err);

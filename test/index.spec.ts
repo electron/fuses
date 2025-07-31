@@ -1,16 +1,17 @@
 import { makeUniversalApp } from '@electron/universal';
-import { promises as fs } from 'fs';
-import * as path from 'path';
+import { describe, expect, it, afterEach } from 'vitest';
+import { promises as fs } from 'node:fs';
+import * as path from 'node:path';
 
-import { FuseState } from '../src/constants';
-import { flipFuses, FuseV1Options, FuseVersion, getCurrentFuseWire } from '../src/index';
+import { FuseState } from '../src/constants.js';
+import { flipFuses, FuseV1Options, FuseVersion, getCurrentFuseWire } from '../src/index.js';
 import {
   getElectronLocally,
   getTmpDir,
   readableFuseWire,
   supportedPlatforms,
   tmpPaths,
-} from './helpers';
+} from './helpers.js';
 
 describe('getCurrentFuseWire()', () => {
   afterEach(async () => {
@@ -102,7 +103,7 @@ describe('flipFuses()', () => {
         [FuseV1Options.EnableCookieEncryption]: true,
       });
       expect(sentinels).toEqual(2);
-    }, 120000); // TODO(dsanders11): Remove timeout once we're no longer running CI under Rosetta
+    });
   }
 
   describe('strictlyRequireAllFuses', () => {

@@ -1,7 +1,8 @@
 import { downloadArtifact } from '@electron/get';
-import { supportedPlatforms } from './test/helpers';
 
-module.exports = async () => {
+import { supportedPlatforms } from './helpers.js';
+
+export default async function setup() {
   console.log('\nDownloading all Electron binaries required for testing...');
 
   for (const [platform, arch] of supportedPlatforms) {
@@ -14,4 +15,4 @@ module.exports = async () => {
   }
 
   console.log('Done...');
-};
+}

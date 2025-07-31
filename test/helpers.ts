@@ -1,10 +1,11 @@
 import { downloadArtifact } from '@electron/get';
-import * as extractZip from 'extract-zip';
-import { promises as fs } from 'fs';
-import * as os from 'os';
-import * as path from 'path';
-import { FuseConfig, FuseV1Options } from '../src';
-import { FuseState } from '../src/constants';
+import extractZip from 'extract-zip';
+import { promises as fs } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+import { type FuseConfig, FuseV1Options } from '../src/index.js';
+import { FuseState } from '../src/constants.js';
 
 export const supportedPlatforms = [
   ['darwin', 'x64'],

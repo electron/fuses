@@ -1,6 +1,6 @@
-import * as cp from 'node:child_process';
+import cp from 'node:child_process';
 import { promises as fs } from 'node:fs';
-import * as path from 'node:path';
+import path from 'node:path';
 
 import { FuseConfig, FuseV1Config, FuseV1Options, FuseVersion } from './config.js';
 import { FuseState, SENTINEL } from './constants.js';

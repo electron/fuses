@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc",
     "build:docs": "npx typedoc src/index.ts",
-    "test": "vitest run && tsc",
+    "test": "vitest run && tsc --noEmit",
     "prepublishOnly": "tsc",
     "prepare": "husky"
   },

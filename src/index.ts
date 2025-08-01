@@ -1,10 +1,12 @@
-import * as cp from 'child_process';
-import { promises as fs } from 'fs';
-import * as path from 'path';
-import { FuseConfig, FuseV1Config, FuseV1Options, FuseVersion } from './config';
-import { FuseState, SENTINEL } from './constants';
+import cp from 'node:child_process';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
-export * from './config';
+import { FuseConfig, FuseV1Config, FuseV1Options, FuseVersion } from './config.js';
+import { FuseState, SENTINEL } from './constants.js';
+
+export * from './config.js';
+export { FuseState } from './constants.js';
 
 const state = (b: boolean | undefined) =>
   b === undefined ? FuseState.INHERIT : b ? FuseState.ENABLE : FuseState.DISABLE;
@@ -141,7 +143,7 @@ export const getCurrentFuseWire = async (
       'Could not find sentinel in the provided Electron binary, fuses are only supported in Electron 12 and higher',
     );
   }
-  const fuseWireVersion = (electron[fuseWirePosition] as any) as FuseVersion;
+  const fuseWireVersion = electron[fuseWirePosition] as any as FuseVersion;
   const fuseWireLength = electron[fuseWirePosition + 1];
   const fuseConfig: FuseConfig<FuseState> = {
     version: `${fuseWireVersion}` as FuseVersion,

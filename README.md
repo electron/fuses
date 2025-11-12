@@ -4,6 +4,7 @@
 
 [![Test](https://github.com/electron/fuses/actions/workflows/test.yml/badge.svg)](https://github.com/electron/fuses/actions/workflows/test.yml)
 [![npm version](http://img.shields.io/npm/v/@electron/fuses.svg)](https://npmjs.org/package/@electron/fuses)
+[![API docs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F%40electron%2Ffuses%2Flatest&query=%24.version&logo=typescript&logoColor=white&label=API%20Docs)](https://packages.electronjs.org/fuses)
 
 ## Usage
 
@@ -29,6 +30,8 @@ await flipFuses(
 );
 ```
 
+For full API usage, see the [API documentation](https://packages.electronjs.org/fuses).
+
 ### From the command line
 
 ```sh
@@ -38,10 +41,9 @@ $ npx @electron/fuses write --app /Applications/Foo.app <...key=on/off>
 
 ### Apple Silicon
 
-For `arm64` macOS builds of your app if you are not immediately codesigning your app after flipping
-the fuses you will need to pass `resetAdHocDarwinSignature: true` to the `flipFuses` method.  Otherwise
-the app will refuse to launch with code signature validation errors.  This is a new security measure on
-Apple Silicon devices.
+For `arm64` macOS builds of your app, you will need to pass `resetAdHocDarwinSignature: true` to the `flipFuses` method
+if you are not immediately codesigning your app after flipping the fuses. Otherwise, the app will refuse to launch with
+code signature validation errors. This is a security measure on Apple Silicon devices.
 
 ```typescript
 import { flipFuses, FuseVersion, FuseV1Options } from '@electron/fuses';
@@ -58,11 +60,12 @@ await flipFuses(
 
 ### New Fuses
 
-If you want to ensure you provide a config for every fuse, even newly added fuses during Electron upgrades
-you can set the `strictlyRequireAllFuses` option to `true`. This will hard fail the build if you are on
-a version of `@electron/fuses` that doesn't have configuration options for every fuse in the Electron binary
-you are targetting or if you don't provide a configuration for a specific fuse present in the Electron binary
-you are targetting.
+If you want to ensure you provide a config for new fuses when upgrading Electron major versions,
+you can set the `strictlyRequireAllFuses` option to `true`.
+
+This will hard fail the build if you are on a version of `@electron/fuses` that doesn't have configuration
+options for every fuse in the Electron binary you are targeting or if you don't provide a configuration
+for a specific fuse present in the Electron binary you are targeting.
 
 ```typescript
 import { flipFuses, FuseVersion, FuseV1Options } from '@electron/fuses';

@@ -14,6 +14,7 @@ export enum FuseV1Options {
   OnlyLoadAppFromAsar = 5,
   LoadBrowserProcessSpecificV8Snapshot = 6,
   GrantFileProtocolExtraPrivileges = 7,
+  WasmTrapHandlers = 8,
 }
 
 export type FuseV1Config<T = boolean> = {

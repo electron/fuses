@@ -26,6 +26,7 @@ await flipFuses(
     [FuseV1Options.OnlyLoadAppFromAsar]: true, // Enforces that Electron will only load your app from "app.asar" instead of its normal search paths
     [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true, // Loads V8 Snapshot from `browser_v8_context_snapshot.bin` for the browser process
     [FuseV1Options.GrantFileProtocolExtraPrivileges]: true, // Grants the file protocol extra privileges
+    [FuseV1Options.WasmTrapHandlers]: true, // Enables V8 signal handlers to trap Out of Bounds memory access from WebAssembly
   },
 );
 ```

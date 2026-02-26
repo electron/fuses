@@ -141,6 +141,7 @@ describe('flipFuses()', () => {
         [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true,
         [FuseV1Options.OnlyLoadAppFromAsar]: true,
         [FuseV1Options.RunAsNode]: true,
+        [FuseV1Options.WasmTrapHandlers]: true,
       }),
     ).resolves.toMatchInlineSnapshot(`1`);
     // Actually flips a fuse

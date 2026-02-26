@@ -128,7 +128,7 @@ describe('flipFuses()', () => {
 
   // This test may have to be updated as we add new fuses, update the Electron version and add a new config for the fuse wire
   it('should succeed when all fuse configurations are provided', async () => {
-    const electronPath = await getElectronLocally('29.0.0', 'darwin', 'x64');
+    const electronPath = await getElectronLocally('41.0.0-beta.4', 'darwin', 'x64');
     await expect(
       flipFuses(electronPath, {
         version: FuseVersion.V1,

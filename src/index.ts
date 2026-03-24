@@ -154,7 +154,11 @@ const setFuseWire = async (
     }
 
     // Two sentinels indicate a universal macOS build; flip fuses in each
-    // slice so both architectures are covered.
+    // slice so both architectures are covered. Validate and prepare every
+    // write before touching the file so a validation error on one slice
+    // cannot leave the binary half-modified.
+    const pendingWrites: { bytes: Buffer; position: number }[] = [];
+
     for (const indexOfSentinel of sentinels) {
       const {
         version: fuseWireVersion,
@@ -200,7 +204,11 @@ const setFuseWire = async (
         wireBytes[i] = newState;
       }
 
-      await handle.write(wireBytes, 0, wireBytes.length, wireBytesPos);
+      pendingWrites.push({ bytes: wireBytes, position: wireBytesPos });
+    }
+
+    for (const { bytes, position } of pendingWrites) {
+      await handle.write(bytes, 0, bytes.length, position);
     }
 
     return sentinels.length;

@@ -145,9 +145,16 @@ const setFuseWire = async (
         'Could not find sentinel in the provided Electron binary, fuses are only supported in Electron 12 and higher',
       );
     }
+    if (sentinels.length > 2) {
+      throw new Error(
+        `Found ${sentinels.length} copies of the fuse sentinel in the provided Electron binary. ` +
+          'At most 2 are expected (one per slice of a universal macOS binary). ' +
+          'This may indicate a corrupted binary or an unsupported build configuration.',
+      );
+    }
 
-    // More than one sentinel indicates a universal build; flip fuses in each
-    // slice so every architecture is covered.
+    // Two sentinels indicate a universal macOS build; flip fuses in each
+    // slice so both architectures are covered.
     for (const indexOfSentinel of sentinels) {
       const {
         version: fuseWireVersion,

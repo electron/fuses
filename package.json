@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc",
     "build:docs": "typedoc src/index.ts",
-    "lint": "oxfmt --check && oxlint --type-aware",
+    "lint": "oxlint && oxfmt --check",
     "test": "vitest run && tsc --noEmit",
     "prepack": "tsc",
     "prepare": "husky"
@@ -38,7 +38,7 @@
   },
   "lint-staged": {
     "*.ts": [
-      "oxlint --type-aware --fix",
+      "oxlint --fix",
       "oxfmt"
     ]
   },

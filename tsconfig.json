@@ -3,12 +3,12 @@
   "compilerOptions": {
     "sourceMap": true,
     "noImplicitAny": true,
+    "types": ["node"],
+    "rootDir": "src",
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "incremental": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

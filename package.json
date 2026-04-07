@@ -16,6 +16,7 @@
   "scripts": {
     "build": "tsc",
     "build:docs": "typedoc src/index.ts",
+    "lint": "oxfmt --check && oxlint --type-aware",
     "test": "vitest run && tsc --noEmit",
     "prepack": "tsc",
     "prepare": "husky"
@@ -28,14 +29,17 @@
     "extract-zip": "^2.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
-    "prettier": "^3.6.2",
+    "oxfmt": "0.42.0",
+    "oxlint": "1.57.0",
+    "oxlint-tsgolint": "0.18.1",
     "typedoc": "~0.25.13",
     "typescript": "^5.8.3",
     "vitest": "^4.1.2"
   },
   "lint-staged": {
     "*.ts": [
-      "prettier --write"
+      "oxlint --type-aware --fix",
+      "oxfmt"
     ]
   },
   "files": [

@@ -60,7 +60,12 @@ if (mode === 'read') {
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
-      const { version, resetAdHocDarwinSignature, strictlyRequireAllFuses, ...rest } = config;
+      const {
+        version,
+        resetAdHocDarwinSignature: _resetAdHocDarwinSignature,
+        strictlyRequireAllFuses: _strictlyRequireAllFuses,
+        ...rest
+      } = config;
       console.log(`Fuse Version: ${styleText(['cyan'], `v${version}`)}`);
 
       switch (config.version) {
@@ -108,7 +113,7 @@ if (mode === 'read') {
 
   getCurrentFuseWire(argv.app)
     .then((config) => {
-      const { version, resetAdHocDarwinSignature, ...rest } = config;
+      const { version } = config;
       console.log(`Fuse Version: ${styleText(['cyan'], `v${version}`)}`);
 
       const keyPairs = positionals || [];

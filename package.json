@@ -17,6 +17,7 @@
     "build": "tsc",
     "build:docs": "typedoc src/index.ts",
     "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt --write",
     "test": "vitest run && tsc --noEmit",
     "prepack": "tsc",
     "prepare": "husky"
@@ -29,15 +30,19 @@
     "extract-zip": "^2.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
-    "oxfmt": "0.42.0",
-    "oxlint": "1.57.0",
-    "oxlint-tsgolint": "0.18.1",
-    "typedoc": "~0.25.13",
-    "typescript": "^5.8.3",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
+    "oxlint-tsgolint": "0.20.0",
+    "typedoc": "~0.28.0",
+    "typescript": "^6.0.2",
     "vitest": "^4.1.2"
   },
   "lint-staged": {
-    "*.ts": [
+    "*.{ts}": [
+      "oxlint --fix",
+      "oxfmt"
+    ],
+    "*.{json}": [
       "oxlint --fix",
       "oxfmt"
     ]

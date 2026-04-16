@@ -16,7 +16,7 @@ const state = (b: boolean | undefined) =>
   b === undefined ? FuseState.INHERIT : b ? FuseState.ENABLE : FuseState.DISABLE;
 
 const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
-  const { version, ...nonVersionConfig } = config;
+  const { version: _version, ...nonVersionConfig } = config;
   const badFuseOption = Object.keys(nonVersionConfig).find(
     (fuseOption) => parseInt(fuseOption, 10) >= wireLength,
   );

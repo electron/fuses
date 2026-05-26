@@ -38,6 +38,9 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
     state(config[FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]),
     state(config[FuseV1Options.GrantFileProtocolExtraPrivileges]),
     state(config[FuseV1Options.WasmTrapHandlers]),
+    state(config[FuseV1Options.DisallowCodeGenerationFromStrings]),
+    state(config[FuseV1Options.DisableProtoThrow]),
+    state(config[FuseV1Options.FrozenIntrinsics]),
   ];
 };
 

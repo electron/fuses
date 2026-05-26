@@ -4,7 +4,7 @@
 
 [![Test](https://github.com/electron/fuses/actions/workflows/test.yml/badge.svg)](https://github.com/electron/fuses/actions/workflows/test.yml)
 [![npm version](http://img.shields.io/npm/v/@electron/fuses.svg)](https://npmjs.org/package/@electron/fuses)
-[![API docs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F%40electron%2Ffuses%2Flatest&query=%24.version&logo=typescript&logoColor=white&label=API%20Docs)](https://packages.electronjs.org/fuses)
+[![API docs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F%40electron%2Ffuses%2Flatest\&query=%24.version\&logo=typescript\&logoColor=white\&label=API%20Docs)](https://packages.electronjs.org/fuses)
 
 ## Usage
 
@@ -27,6 +27,9 @@ await flipFuses(
     [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true, // Loads V8 Snapshot from `browser_v8_context_snapshot.bin` for the browser process
     [FuseV1Options.GrantFileProtocolExtraPrivileges]: true, // Grants the file protocol extra privileges
     [FuseV1Options.WasmTrapHandlers]: true, // Enables V8 signal handlers to trap Out of Bounds memory access from WebAssembly
+    [FuseV1Options.DisallowCodeGenerationFromStrings]: false, // Make built-in language features like eval and new Function that generate code from strings throw an exception instead. This does not affect the Node.js node:vm module.
+    [FuseV1Options.DisableProtoThrow]: false, // Disable the Object.prototype.__proto__ property. Accesses to the property will throw an exception with the code ERR_PROTO_ACCESS.
+    [FuseV1Options.FrozenIntrinsics]: false, // Enable experimental frozen intrinsics like Array and Object.
   },
 );
 ```

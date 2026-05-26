@@ -142,6 +142,9 @@ describe('flipFuses()', () => {
         [FuseV1Options.OnlyLoadAppFromAsar]: true,
         [FuseV1Options.RunAsNode]: true,
         [FuseV1Options.WasmTrapHandlers]: true,
+        [FuseV1Options.DisallowCodeGenerationFromStrings]: true,
+        [FuseV1Options.DisableProtoThrow]: true,
+        [FuseV1Options.FrozenIntrinsics]: true,
       }),
     ).resolves.toMatchInlineSnapshot(`1`);
     // Actually flips a fuse

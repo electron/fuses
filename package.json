@@ -23,11 +23,11 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@electron-internal/extract-zip": "^1.0.1",
     "@electron/get": "^4.0.2",
     "@electron/universal": "^3.0.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "~22.10.7",
-    "extract-zip": "^2.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "oxfmt": "^0.44.0",

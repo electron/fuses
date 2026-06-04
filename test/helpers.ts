@@ -1,5 +1,5 @@
 import { downloadArtifact } from '@electron/get';
-import extractZip from 'extract-zip';
+import { extract } from '@electron-internal/extract-zip';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -33,7 +33,7 @@ export async function getElectronLocally(version: string, platform: string, arch
     artifactName: 'electron',
   });
   const tmpDir = await getTmpDir();
-  await extractZip(electronZip, {
+  await extract(electronZip, {
     dir: tmpDir,
   });
 

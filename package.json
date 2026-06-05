@@ -23,7 +23,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@electron-internal/extract-zip": "^1.0.1",
+    "@electron-internal/extract-zip": "^1.0.2",
     "@electron/get": "^4.0.2",
     "@electron/universal": "^3.0.1",
     "@tsconfig/node22": "^22.0.2",

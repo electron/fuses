@@ -13,7 +13,9 @@
 ```typescript
 import { flipFuses, FuseVersion, FuseV1Options } from '@electron/fuses';
 
-// During your build / package process
+// Call this after your app has been packaged (all files in place) but
+// before code signing. This fits naturally in an electron-builder
+// `afterPack` hook or an electron-forge `postPackage`/`packageAfterCopy` hook.
 await flipFuses(
   require('electron'), // Returns the path to the electron binary
   {

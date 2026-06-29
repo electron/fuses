@@ -41,7 +41,18 @@ const buildFuseV1Wire = (config: FuseV1Config, wireLength: number) => {
   ];
 };
 
-const pathToFuseFile = (pathToElectron: string) => {
+// Matches a macOS app bundle's inner binary location, e.g.
+// "Foo.app/Contents/MacOS/Electron". Using the full bundle structure rather
+// than a bare ".app" substring avoids false positives when an ancestor
+// directory merely contains ".app" (e.g. "/home/user/.app/..." or "my.app.win").
+const APP_BUNDLE_BINARY_REGEX = /\.app[\\/]Contents[\\/]MacOS[\\/]/;
+
+// Matches a path segment ending in ".app", i.e. the bundle root itself or an
+// ancestor that is a real ".app" bundle. Anchored to separators/string
+// boundaries so directory names like ".app" or "my.app.win" do not match.
+const APP_BUNDLE_SEGMENT_REGEX = /(^|[\\/])[^\\/]+\.app([\\/]|$)/;
+
+export const pathToFuseFile = (pathToElectron: string) => {
   if (pathToElectron.endsWith('.app')) {
     return path.resolve(
       pathToElectron,
@@ -51,7 +62,7 @@ const pathToFuseFile = (pathToElectron: string) => {
       'Electron Framework',
     );
   }
-  if (pathToElectron.includes('.app')) {
+  if (APP_BUNDLE_BINARY_REGEX.test(pathToElectron)) {
     return path.resolve(
       pathToElectron,
       '..',
@@ -277,7 +288,7 @@ export const flipFuses = async (
   }
 
   // Reset the ad-hoc signature on macOS, should only be done for arm64 apps
-  if (fuseConfig.resetAdHocDarwinSignature && pathToElectron.includes('.app')) {
+  if (fuseConfig.resetAdHocDarwinSignature && APP_BUNDLE_SEGMENT_REGEX.test(pathToElectron)) {
     const pathToApp = `${pathToElectron.split('.app')[0]}.app`;
     const result = cp.spawnSync('codesign', [
       '--sign',

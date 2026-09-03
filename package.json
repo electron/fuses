@@ -29,7 +29,7 @@
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "~22.10.7",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
+    "lint-staged": "^17.4.1",
     "oxfmt": "^0.44.0",
     "oxlint": "^1.59.0",
     "oxlint-tsgolint": "^0.20.0",

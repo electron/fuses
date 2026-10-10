@@ -29,6 +29,7 @@ await flipFuses(
     [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true, // Loads V8 Snapshot from `browser_v8_context_snapshot.bin` for the browser process
     [FuseV1Options.GrantFileProtocolExtraPrivileges]: true, // Grants the file protocol extra privileges
     [FuseV1Options.WasmTrapHandlers]: true, // Enables V8 signal handlers to trap Out of Bounds memory access from WebAssembly
+    [FuseV1Options.EnableDeviceBoundSessions]: true, // Enables Device Bound Session Credentials (DBSC), which bind sessions to hardware-backed keys
   },
 );
 ```

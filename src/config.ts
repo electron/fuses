@@ -15,6 +15,7 @@ export enum FuseV1Options {
   LoadBrowserProcessSpecificV8Snapshot = 6,
   GrantFileProtocolExtraPrivileges = 7,
   WasmTrapHandlers = 8,
+  EnableDeviceBoundSessions = 9,
 }
 
 export type FuseV1Config<T = boolean> = {

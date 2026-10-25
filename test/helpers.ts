@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { type FuseConfig, FuseV1Options } from '../src/index.js';
-import { FuseState } from '../src/constants.js';
+import { FuseState, SENTINEL } from '../src/constants.js';
 
 export const supportedPlatforms = [
   ['darwin', 'x64'],
@@ -44,6 +44,25 @@ export async function getElectronLocally(version: string, platform: string, arch
   } else {
     return path.resolve(tmpDir, 'electron');
   }
+}
+
+/**
+ * Writes a stand-in for an Electron binary with a fuse wire of the given length, every fuse disabled. This makes it
+ * possible to test fuses that no released version of Electron has yet.
+ */
+export async function getFakeElectronWithFuseWire(wireLength: number) {
+  const tmpDir = await getTmpDir();
+  const electronPath = path.resolve(tmpDir, 'electron');
+  await fs.writeFile(
+    electronPath,
+    Buffer.concat([
+      Buffer.from('not really electron'),
+      Buffer.from(SENTINEL),
+      Buffer.from([1, wireLength]),
+      Buffer.alloc(wireLength, FuseState.DISABLE),
+    ]),
+  );
+  return electronPath;
 }
 
 export function readableFuseWire(config: FuseConfig<FuseState>) {

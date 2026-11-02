@@ -7,6 +7,7 @@ import { FuseState } from '../src/constants.js';
 import { flipFuses, FuseV1Options, FuseVersion, getCurrentFuseWire } from '../src/index.js';
 import {
   getElectronLocally,
+  getFakeElectronWithFuseWire,
   getTmpDir,
   readableFuseWire,
   supportedPlatforms,
@@ -126,10 +127,50 @@ describe('flipFuses()', () => {
     });
   });
 
+  describe('fuses newer than released versions of Electron', () => {
+    it('should flip EnableDeviceBoundSessions when the fuse wire has room for it', async () => {
+      const electronPath = await getFakeElectronWithFuseWire(10);
+      await expect(
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          [FuseV1Options.EnableDeviceBoundSessions]: true,
+        }),
+      ).resolves.toEqual(1);
+      const wire = await getCurrentFuseWire(electronPath);
+      expect(wire[FuseV1Options.EnableDeviceBoundSessions]).toEqual(FuseState.ENABLE);
+      expect(wire[FuseV1Options.WasmTrapHandlers]).toEqual(FuseState.DISABLE);
+    });
+
+    it('should refuse to flip EnableDeviceBoundSessions when the fuse wire is too short for it', async () => {
+      const electronPath = await getFakeElectronWithFuseWire(9);
+      await expect(
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          [FuseV1Options.EnableDeviceBoundSessions]: true,
+        }),
+      ).rejects.toThrow(
+        'Trying to configure EnableDeviceBoundSessions but the fuse wire in this version of Electron is not long enough',
+      );
+    });
+
+    it('should leave EnableDeviceBoundSessions alone when it is not configured', async () => {
+      const electronPath = await getFakeElectronWithFuseWire(10);
+      await flipFuses(electronPath, {
+        version: FuseVersion.V1,
+        [FuseV1Options.WasmTrapHandlers]: true,
+      });
+      const wire = await getCurrentFuseWire(electronPath);
+      expect(wire[FuseV1Options.WasmTrapHandlers]).toEqual(FuseState.ENABLE);
+      expect(wire[FuseV1Options.EnableDeviceBoundSessions]).toEqual(FuseState.DISABLE);
+    });
+  });
+
   // This test may have to be updated as we add new fuses, update the Electron version and add a new config for the fuse wire
   it('should succeed when all fuse configurations are provided', async () => {
     const electronPath = await getElectronLocally('41.0.0-beta.4', 'darwin', 'x64');
     await expect(
+      // @ts-expect-error EnableDeviceBoundSessions is not in a released Electron yet, so this config cannot set it.
+      // Once it is, update the version above and add it here.
       flipFuses(electronPath, {
         version: FuseVersion.V1,
         strictlyRequireAllFuses: true,

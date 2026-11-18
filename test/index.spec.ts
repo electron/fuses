@@ -149,4 +149,129 @@ describe('flipFuses()', () => {
       FuseState.ENABLE,
     );
   });
+
+  describe('per-version fuse support with strictlyRequireAllFuses', () => {
+    // Electron 12 introduced fuses with RunAsNode
+    it('Electron 12: RunAsNode', async () => {
+      const electronPath = await getElectronLocally('12.0.0', 'darwin', 'x64');
+      await expect(
+        // @ts-expect-error: v12 has 1 fuse
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          strictlyRequireAllFuses: true,
+          [FuseV1Options.RunAsNode]: true,
+        }),
+      ).resolves.toMatchInlineSnapshot(`1`);
+      expect((await getCurrentFuseWire(electronPath))[FuseV1Options.RunAsNode]).toEqual(
+        FuseState.ENABLE,
+      );
+    });
+
+    // Electron 14 added EnableCookieEncryption
+    it('Electron 14: EnableCookieEncryption', async () => {
+      const electronPath = await getElectronLocally('14.0.0', 'darwin', 'x64');
+      await expect(
+        // @ts-expect-error: v14 has 2 fuses
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          strictlyRequireAllFuses: true,
+          [FuseV1Options.RunAsNode]: true,
+          [FuseV1Options.EnableCookieEncryption]: true,
+        }),
+      ).resolves.toMatchInlineSnapshot(`1`);
+      expect(
+        (await getCurrentFuseWire(electronPath))[FuseV1Options.EnableCookieEncryption],
+      ).toEqual(FuseState.ENABLE);
+    });
+
+    // Electron 15 added EnableNodeOptionsEnvironmentVariable, EnableNodeCliInspectArguments,
+    // EnableEmbeddedAsarIntegrityValidation, and OnlyLoadAppFromAsar
+    it('Electron 15: node options and ASAR integrity fuses', async () => {
+      const electronPath = await getElectronLocally('15.0.0', 'darwin', 'x64');
+      await expect(
+        // @ts-expect-error: v15 has 6 fuses
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          strictlyRequireAllFuses: true,
+          [FuseV1Options.RunAsNode]: true,
+          [FuseV1Options.EnableCookieEncryption]: true,
+          [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: true,
+          [FuseV1Options.EnableNodeCliInspectArguments]: true,
+          [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+          [FuseV1Options.OnlyLoadAppFromAsar]: true,
+        }),
+      ).resolves.toMatchInlineSnapshot(`1`);
+      expect(
+        (await getCurrentFuseWire(electronPath))[FuseV1Options.OnlyLoadAppFromAsar],
+      ).toEqual(FuseState.ENABLE);
+    });
+
+    // Electron 21 added LoadBrowserProcessSpecificV8Snapshot
+    it('Electron 21: LoadBrowserProcessSpecificV8Snapshot', async () => {
+      const electronPath = await getElectronLocally('21.0.0', 'darwin', 'x64');
+      await expect(
+        // @ts-expect-error: v21 has 7 fuses
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          strictlyRequireAllFuses: true,
+          [FuseV1Options.RunAsNode]: true,
+          [FuseV1Options.EnableCookieEncryption]: true,
+          [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: true,
+          [FuseV1Options.EnableNodeCliInspectArguments]: true,
+          [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+          [FuseV1Options.OnlyLoadAppFromAsar]: true,
+          [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true,
+        }),
+      ).resolves.toMatchInlineSnapshot(`1`);
+      expect(
+        (await getCurrentFuseWire(electronPath))[FuseV1Options.LoadBrowserProcessSpecificV8Snapshot],
+      ).toEqual(FuseState.ENABLE);
+    });
+
+    // Electron 29 added GrantFileProtocolExtraPrivileges
+    it('Electron 29: GrantFileProtocolExtraPrivileges', async () => {
+      const electronPath = await getElectronLocally('29.0.0', 'darwin', 'x64');
+      await expect(
+        // @ts-expect-error: v21 has 8 fuses
+        flipFuses(electronPath, {
+          version: FuseVersion.V1,
+          strictlyRequireAllFuses: true,
+          [FuseV1Options.RunAsNode]: true,
+          [FuseV1Options.EnableCookieEncryption]: true,
+          [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: true,
+          [FuseV1Options.EnableNodeCliInspectArguments]: true,
+          [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+          [FuseV1Options.OnlyLoadAppFromAsar]: true,
+          [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true,
+          [FuseV1Options.GrantFileProtocolExtraPrivileges]: true,
+        }),
+      ).resolves.toMatchInlineSnapshot(`1`);
+      expect(
+        (await getCurrentFuseWire(electronPath))[FuseV1Options.GrantFileProtocolExtraPrivileges],
+      ).toEqual(FuseState.ENABLE);
+    });
+
+    // Electron 41 added LoadBrowserProcessSpecificV8Snapshot
+    it('Electron 41: LoadBrowserProcessSpecificV8Snapshot', async () => {
+      const electronPath = await getElectronLocally('41.0.0-beta.4', 'darwin', 'x64');
+      await expect(
+        flipFuses(electronPath, {
+        version: FuseVersion.V1,
+        strictlyRequireAllFuses: true,
+        [FuseV1Options.EnableCookieEncryption]: true,
+        [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+        [FuseV1Options.EnableNodeCliInspectArguments]: true,
+        [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: true,
+        [FuseV1Options.GrantFileProtocolExtraPrivileges]: true,
+        [FuseV1Options.LoadBrowserProcessSpecificV8Snapshot]: true,
+        [FuseV1Options.OnlyLoadAppFromAsar]: true,
+        [FuseV1Options.RunAsNode]: true,
+        [FuseV1Options.WasmTrapHandlers]: true,
+        }),
+      ).resolves.toMatchInlineSnapshot(`1`);
+      expect(
+        (await getCurrentFuseWire(electronPath))[FuseV1Options.WasmTrapHandlers],
+      ).toEqual(FuseState.ENABLE);
+    });
+  });
 });
